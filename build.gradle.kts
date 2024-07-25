@@ -11,14 +11,14 @@ plugins {
   checkstyle
   `jacoco-report-aggregation`
 
-  id("com.github.spotbugs") version "6.0.19"
+  id("com.github.spotbugs") version "6.0.24"
   id("com.diffplug.spotless") version "6.25.0"
   id("com.github.ben-manes.versions") version "0.51.0"
-  id("io.freefair.lombok") version "8.6"
+  id("io.freefair.lombok") version "8.10"
   id("org.sonarqube") version "5.1.0.4882"
 
-  id("org.springframework.boot") version "3.3.2" apply false
-  id("org.graalvm.buildtools.native") version "0.10.2" apply false
+  id("org.springframework.boot") version "3.3.4" apply false
+  id("org.graalvm.buildtools.native") version "0.10.3" apply false
   id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -62,7 +62,7 @@ subprojects {
   apply(plugin = "org.sonarqube")
 
   checkstyle {
-    toolVersion = "10.17.0"
+    toolVersion = "10.18.1"
   }
 
   tasks.withType<Checkstyle> {

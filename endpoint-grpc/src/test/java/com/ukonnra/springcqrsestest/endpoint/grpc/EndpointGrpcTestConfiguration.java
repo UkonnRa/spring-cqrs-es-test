@@ -4,6 +4,7 @@ import com.ukonnra.springcqrsestest.endpoint.grpc.proto.JournalServiceGrpc;
 import com.ukonnra.springcqrsestest.endpoint.grpc.proto.UserServiceGrpc;
 import com.ukonnra.springcqrsestest.testsuite.TestSuiteConfiguration;
 import io.grpc.Channel;
+import java.util.Set;
 import net.devh.boot.grpc.client.channelfactory.GrpcChannelFactory;
 import net.devh.boot.grpc.client.stubfactory.BlockingStubFactory;
 import org.springframework.aot.hint.ExecutableMode;
@@ -24,10 +25,11 @@ public class EndpointGrpcTestConfiguration {
     @Override
     public void registerHints(
         org.springframework.aot.hint.RuntimeHints hints, ClassLoader classLoader) {
-      final var method =
-          ReflectionUtils.findMethod(UserServiceGrpc.class, "newBlockingStub", Channel.class);
-      if (method != null) {
-        hints.reflection().registerMethod(method, ExecutableMode.INVOKE);
+      for (final var clz : Set.of(UserServiceGrpc.class, JournalServiceGrpc.class)) {
+        final var method = ReflectionUtils.findMethod(clz, "newBlockingStub", Channel.class);
+        if (method != null) {
+          hints.reflection().registerMethod(method, ExecutableMode.INVOKE);
+        }
       }
     }
   }

@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +30,17 @@ public interface JournalService
         JournalQuery,
         JournalPresentation,
         JournalRepository> {
+  Logger LOGGER = LoggerFactory.getLogger(JournalService.class);
+
   @Override
   default Set<JournalPresentation> convert(
       @Nullable final User operator, final Collection<Journal> entities) {
     return entities.stream()
-        .map(entity -> JournalPresentation.of(operator, entity))
+        .map(
+            entity -> {
+              LOGGER.info("For each: {}", entity);
+              return JournalPresentation.of(operator, entity);
+            })
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());
   }

@@ -31,11 +31,13 @@ public class JournalUserPO {
   @ManyToOne(optional = false)
   @MapsId("journalId")
   @JoinColumn(name = "journal_id")
+  @ToString.Exclude
   private JournalPO journal;
 
   @ManyToOne(optional = false)
   @MapsId("userId")
   @JoinColumn(name = "user_id")
+  @ToString.Exclude
   private UserPO user;
 
   private boolean admin;

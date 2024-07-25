@@ -2,7 +2,9 @@ package com.ukonnra.springcqrsestest.endpoint.grpc;
 
 import com.ukonnra.springcqrsestest.database.jpa.DatabaseJpaConfiguration;
 import com.ukonnra.springcqrsestest.shared.SharedConfiguration;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.buffer.AbstractByteBufAllocator;
+import io.grpc.netty.shaded.io.netty.channel.socket.nio.NioSocketChannel;
 import io.grpc.netty.shaded.io.netty.util.ReferenceCountUtil;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,16 @@ public class ApplicationConfiguration {
             .reflection()
             .registerTypeIfPresent(
                 classLoader, JCTOOLS_PKG + e.getKey(), hint -> hint.withField(e.getValue()));
+      }
+
+      hints.reflection().registerType(NettyChannelBuilder.class);
+
+      try {
+        hints
+            .reflection()
+            .registerConstructor(
+                NioSocketChannel.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
+      } catch (NoSuchMethodException ignored) {
       }
     }
   }

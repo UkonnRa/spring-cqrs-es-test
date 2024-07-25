@@ -26,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,7 +38,9 @@ import lombok.ToString;
       @Index(columnList = "deletedDate"),
       @Index(columnList = "name"),
     })
+@Slf4j
 public class JournalPO extends AbstractEntityPO<Journal> {
+
   @Size(min = AbstractEntity.MIN_NAMELY, max = AbstractEntity.MAX_NAMELY)
   @Column(nullable = false)
   private String name;
@@ -101,24 +104,5 @@ public class JournalPO extends AbstractEntityPO<Journal> {
     this.journalUsers =
         Stream.concat(JournalUserPO.ofAll(this, members, true).stream(), this.getAdmins().stream())
             .collect(Collectors.toSet());
-  }
-
-  @Override
-  protected Class<Journal> getEntityClass() {
-    return Journal.class;
-  }
-
-  @Override
-  public Journal convertToEntity() {
-    final var entity = super.convertToEntity();
-
-    if (entity != null) {
-      entity.setName(this.name);
-      entity.setAdmins(this.getAdminIds());
-      entity.setMembers(this.getMemberIds());
-      entity.setTags(this.getTags());
-    }
-
-    return entity;
   }
 }

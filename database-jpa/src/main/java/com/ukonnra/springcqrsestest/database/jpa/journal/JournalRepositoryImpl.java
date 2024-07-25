@@ -1,9 +1,11 @@
 package com.ukonnra.springcqrsestest.database.jpa.journal;
 
+import com.ukonnra.springcqrsestest.database.jpa.DatabaseJpaEntityRepository;
 import com.ukonnra.springcqrsestest.database.jpa.user.UserPO;
 import com.ukonnra.springcqrsestest.database.jpa.user.UserPORepository;
 import com.ukonnra.springcqrsestest.shared.EventRepository;
 import com.ukonnra.springcqrsestest.shared.journal.Journal;
+import com.ukonnra.springcqrsestest.shared.journal.JournalEvent;
 import com.ukonnra.springcqrsestest.shared.journal.JournalQuery;
 import com.ukonnra.springcqrsestest.shared.journal.JournalRepository;
 import java.util.Collection;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,10 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 @Getter
-public class JournalRepositoryImpl implements JournalRepository {
+@Slf4j
+public class JournalRepositoryImpl
+    implements JournalRepository,
+        DatabaseJpaEntityRepository<Journal, JournalQuery, JournalEvent, JournalPO> {
   private final EventRepository eventRepository;
   private final JournalPORepository journalPORepository;
   private final UserPORepository userPORepository;
@@ -40,13 +46,13 @@ public class JournalRepositoryImpl implements JournalRepository {
       pos = this.journalPORepository.findAll(specification);
     }
 
-    return pos.stream().map(JournalPO::convertToEntity).collect(Collectors.toSet());
+    return pos.stream().map(this::convertToEntity).collect(Collectors.toSet());
   }
 
   @Override
   public Set<Journal> findAllByIds(Collection<UUID> ids) {
     return this.journalPORepository.findAllById(ids).stream()
-        .map(JournalPO::convertToEntity)
+        .map(this::convertToEntity)
         .collect(Collectors.toSet());
   }
 
@@ -63,5 +69,15 @@ public class JournalRepositoryImpl implements JournalRepository {
     final var pos =
         entities.stream().map(entity -> new JournalPO(entity, users)).collect(Collectors.toSet());
     this.journalPORepository.saveAllAndFlush(pos);
+  }
+
+  @Override
+  public Journal convertToEntity(JournalPO po) {
+    final var entity = DatabaseJpaEntityRepository.super.convertToEntity(po);
+    entity.setName(po.getName());
+    entity.setAdmins(po.getAdminIds());
+    entity.setMembers(po.getMemberIds());
+    entity.setTags(po.getTags());
+    return entity;
   }
 }

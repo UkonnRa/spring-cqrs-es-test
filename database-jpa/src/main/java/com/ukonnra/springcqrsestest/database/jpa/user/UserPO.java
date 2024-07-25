@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.lang.Nullable;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -43,21 +42,5 @@ public class UserPO extends AbstractEntityPO<User> {
     this.loginName = user.getLoginName();
     this.displayName = user.getDisplayName();
     this.systemAdmin = user.getSystemAdmin();
-  }
-
-  @Override
-  public Class<User> getEntityClass() {
-    return User.class;
-  }
-
-  @Override
-  public @Nullable User convertToEntity() {
-    final var entity = super.convertToEntity();
-    if (entity != null) {
-      entity.setLoginName(this.loginName);
-      entity.setDisplayName(this.displayName);
-      entity.setSystemAdmin(this.systemAdmin);
-    }
-    return entity;
   }
 }
